@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { copy, linkIcon, loader, tick } from "../assets";
+import { copy, linkIcon, loader, tick, deleteIcon } from "../assets";
 import { useLazyGetSummaryQuery } from "../services/articles";
+
+import { v4 as uuidv4 } from "uuid";
 const Demo = () => {
   const [article, setArticle] = useState({
     url: "",
@@ -9,8 +11,9 @@ const Demo = () => {
 
   const [allArticles, setAllArticles] = useState([]);
   const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
-
+  const uniqueId = uuidv4();
   const [copied, setCopied] = useState("");
+  const [copyArticleSummary, setCopyArticleSummary] = useState("");
 
   useEffect(() => {
     const articleFromLocalStorage = JSON.parse(
@@ -30,14 +33,16 @@ const Demo = () => {
       const data = await getSummary({ articleUrl: article.url });
 
       if (data?.data?.summary) {
-        const newArticle = { ...article, summary: data?.data?.summary };
+        const newArticle = {
+          ...article,
+          summary: data?.data?.summary,
+          id: uniqueId,
+        };
 
         const updateArticles = [newArticle, ...allArticles];
         setArticle(newArticle);
         setAllArticles(updateArticles);
         localStorage.setItem("articles", JSON.stringify(updateArticles));
-
-        console.log("new article", newArticle);
       } else {
         console.log("no summary in data");
       }
@@ -52,6 +57,28 @@ const Demo = () => {
     setCopied(copyUrl);
     navigator.clipboard.writeText(copyUrl);
     setTimeout(() => setCopied(false), 3000);
+  };
+
+  const handleCopySummary = (copySummary) => {
+    setCopyArticleSummary(copySummary);
+    navigator.clipboard.writeText(copySummary);
+    setTimeout(() => setCopyArticleSummary(false), 3000);
+  };
+
+  const deleteUrl = (id) => {
+    const key = "articles";
+    const storedValue = localStorage.getItem(key);
+
+    if (storedValue) {
+      const parsedValue = JSON.parse(storedValue);
+      const updateValue = parsedValue.filter((item) => item.id != id);
+
+      localStorage.setItem(key, JSON.stringify(updateValue));
+      setAllArticles(updateValue);
+      setArticle(updateValue);
+    }
+
+    console.log("uuid", id);
   };
 
   return (
@@ -81,7 +108,7 @@ const Demo = () => {
             type="submit"
             className="submit_btn peer-focus:border-gray-700 peer-focus:text-gray-700"
           >
-            &#9166
+            ↵
           </button>
         </form>
 
@@ -97,7 +124,7 @@ const Demo = () => {
                 <img
                   src={copied === item.url ? tick : copy}
                   alt="copy_icon"
-                  className="w-[40%] h-[40%] object-contain"
+                  className="w-[100%] h-[100%] object-contain"
                 />
               </div>
               <p
@@ -106,6 +133,19 @@ const Demo = () => {
               >
                 {item?.url}
               </p>
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteUrl(item?.id);
+                }}
+              >
+                <img
+                  src={deleteIcon}
+                  alt="delete"
+                  className="w-4 h-4 object-contain"
+                  style={{ color: "gray" }}
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -113,7 +153,7 @@ const Demo = () => {
 
       {/* Display RESULT */}
 
-      <div className="my-10 max-w-full flex justify-center items-center">
+      <div className="my-10 max-w-full flex justify-center items-center ">
         {isFetching ? (
           <img src={loader} alt="loader" className="w-20 h-20 object-contain" />
         ) : error ? (
@@ -127,9 +167,22 @@ const Demo = () => {
         ) : (
           article.summary && (
             <div className="flex flex-col gap-3">
-              <h2 className="font-satoshi font-bold text-gray-600 text-xl">
-                Article <span className="blue_gradient">Summary</span>
-              </h2>
+              <div className="flex justify-between w-full items-center">
+                <h2 className="font-satoshi font-bold text-gray-600 text-xl">
+                  Article <span className="blue_gradient">Summary</span>
+                </h2>
+                <div
+                  onClick={() => handleCopySummary(article?.summary)}
+                  className="cursor-pointer"
+                >
+                  <img
+                    src={copyArticleSummary === article.summary ? tick : copy}
+                    alt="copy_icon"
+                    className="w-5 h-5 object-contain "
+                  />
+                </div>
+              </div>
+
               <div className="summary_box">
                 <p className="font-inter font-medium text-sm text-gray-700">
                   {article.summary}
