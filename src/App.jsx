@@ -1,20 +1,29 @@
 import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Hero from "./components/Hero";
 import Demo from "./components/Demo";
 import "./App.css";
+import { publicRoutes } from "./routes/routes";
+import { PublicRouteGuard } from "./routes/Guard";
 
 const App = () => {
   return (
-    <main>
-      <div className="main">
-        <div className="gradient" />
-      </div>
-
-      <div className="app">
-        <Hero />
-        <Demo />
-      </div>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        {publicRoutes.map(({ path, component: Component }, index) => (
+          <Route
+            path={path}
+            exact={true}
+            key={index}
+            element={
+              <PublicRouteGuard>
+                <Component />
+              </PublicRouteGuard>
+            }
+          />
+        ))}
+      </Routes>
+    </BrowserRouter>
   );
 };
 

@@ -6,13 +6,23 @@ const Hero = () => {
     <header className="w-full flex justify-center items-center flex-col">
       <nav className="flex justify-between items-center w-full mb-10 pt-3">
         <img src={ailogo} alt="AtAI_logo" className="w-28 object-contain" />
-        <button
-          type="button"
-          onClick={() => window.open("https://github.com/Ikechukwu-attah")}
-          className="black_btn"
-        >
-          Github
-        </button>
+        <div className="flex gap-2">
+          {" "}
+          <button
+            type="button"
+            onClick={() => window.open("https://github.com/Ikechukwu-attah")}
+            className="black_btn"
+          >
+            Login
+          </button>
+          <button
+            type="button"
+            onClick={() => window.open("https://github.com/Ikechukwu-attah")}
+            className="black_btn"
+          >
+            SignUp
+          </button>
+        </div>
       </nav>
       <h1 className="head_text">
         Summarize Article with <br className="max-md:hidden" />
