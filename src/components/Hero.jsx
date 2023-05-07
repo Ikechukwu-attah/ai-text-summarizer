@@ -1,27 +1,35 @@
 import React from "react";
 import { ailogo } from "../assets";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
-    <header className="w-full flex justify-center items-center flex-col">
-      <nav className="flex justify-between items-center w-full mb-10 pt-3">
-        <img src={ailogo} alt="AtAI_logo" className="w-28 object-contain" />
+    <header className="flex flex-col items-center justify-center w-full">
+      <nav className="flex items-center justify-between w-full pt-3 mb-10">
+        <img src={ailogo} alt="AtAI_logo" className="object-contain w-28" />
         <div className="flex gap-2">
           {" "}
-          <button
-            type="button"
-            onClick={() => window.open("https://github.com/Ikechukwu-attah")}
-            className="black_btn"
-          >
-            Login
-          </button>
-          <button
-            type="button"
-            onClick={() => window.open("https://github.com/Ikechukwu-attah")}
-            className="black_btn"
-          >
-            SignUp
-          </button>
+          <Link to="/login">
+            {" "}
+            <button
+              type="button"
+              // onClick={() => window.open("https://github.com/Ikechukwu-attah")}
+
+              className="black_btn"
+            >
+              Login
+            </button>
+          </Link>
+          <Link to="/signup">
+            {" "}
+            <button
+              type="button"
+              // onClick={() => window.open("https://github.com/Ikechukwu-attah")}
+              className="black_btn"
+            >
+              SignUp
+            </button>
+          </Link>
         </div>
       </nav>
       <h1 className="head_text">
