@@ -33,7 +33,7 @@ const SignUp = () => {
             required
             name="email"
             onChange={handleChange}
-            value={data.email}
+            value={data?.email}
           />
           <input
             type="password"
@@ -42,7 +42,16 @@ const SignUp = () => {
             required
             name="password"
             onChange={handleChange}
-            value={data.password}
+            value={data?.password}
+          />
+          <input
+            type="password"
+            className=" w-[100%] p-2 border border-gray-400 focus:border-blue-700 focus:outline-none rounded"
+            placeholder="confirmPassword"
+            required
+            name="confirmPassword"
+            onChange={handleChange}
+            value={data?.confirmPassword}
           />
           <input
             type="tel"
@@ -51,14 +60,14 @@ const SignUp = () => {
             required
             name="phone"
             onChange={handleChange}
-            value={data.phone}
+            value={data?.phone}
           />
           <button className="w-full p-2 text-white bg-blue-500 rounded">
             Register
           </button>
         </form>
 
-        <a href="#" className="self-start text-xs">
+        <a href="/login" className="self-start text-xs">
           Already have an account? login
         </a>
       </div>

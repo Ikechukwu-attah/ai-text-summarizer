@@ -1,17 +1,27 @@
 import React, { useState } from "react";
 import { useLoginUserMutation } from "../../services/auth";
-import { data } from "autoprefixer";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Login = () => {
-  const [userLogin, { error, isLoading }] = useLoginUserMutation();
+  const [userLogin, { data: user, error, isLoading, isSuccess }] =
+    useLoginUserMutation();
 
   const [data, setData] = useState();
   console.log({ data });
 
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/");
+      console.log("user", user?.result?.email);
+    }
+  }, [isSuccess]);
+
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData({ ...data, [name]: value });
-    console.log("event", e.target.value);
   };
 
   const handleSubmit = (e) => {
@@ -52,9 +62,18 @@ const Login = () => {
           </button>
         </form>
 
-        <a href="#" className="self-start text-sm">
-          Forget password
-        </a>
+        <div className="flex items-center justify-between gap-4">
+          <a href="/forgot-password" className="self-start text-xs">
+            Forget password
+          </a>
+
+          <span className="text-xs">
+            Dont have account?{" "}
+            <a href="/signup" className="self-start text-xs text-blue-800">
+              Register
+            </a>
+          </span>
+        </div>
       </div>
     </div>
   );

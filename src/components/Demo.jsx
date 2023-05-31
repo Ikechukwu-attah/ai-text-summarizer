@@ -3,7 +3,10 @@ import { copy, linkIcon, loader, tick, deleteIcon } from "../assets";
 import { useLazyGetSummaryQuery } from "../services/articles";
 
 import { v4 as uuidv4 } from "uuid";
+import { checkLoginStatus } from "../Authorization/UserAuthentication";
 const Demo = () => {
+  const isLoggedIn = checkLoginStatus();
+
   const [article, setArticle] = useState({
     url: "",
     summary: "",
@@ -82,17 +85,17 @@ const Demo = () => {
   };
 
   return (
-    <section className="mt-16 w-full max-w-xl">
+    <section className="w-full max-w-xl mt-16">
       <div className="flex flex-col w-full gap-2">
         <form
           action=""
           onSubmit={handleSubmit}
-          className="relative flex justify-center items-center"
+          className="relative flex items-center justify-center"
         >
           <img
             src={linkIcon}
             alt="link_icon"
-            className="absolute left-0 my-2 ml-3 w-5"
+            className="absolute left-0 w-5 my-2 ml-3"
           />
           <input
             type="url"
@@ -113,7 +116,7 @@ const Demo = () => {
         </form>
 
         {/* Browse URL HISTORY */}
-        <div className="flex flex-col gap-1 max-h-60 overflow-y-auto">
+        <div className="flex flex-col gap-1 overflow-y-auto max-h-60">
           {allArticles.map((item, index) => (
             <div
               key={`link-${index}`}
@@ -127,10 +130,7 @@ const Demo = () => {
                   className="w-[100%] h-[100%] object-contain"
                 />
               </div>
-              <p
-                className="flex-1 font-satoshi text-blue-700 font-medium text-sm truncate
-              "
-              >
+              <p className="flex-1 text-sm font-medium text-blue-700 truncate font-satoshi ">
                 {item?.url}
               </p>
               <div
@@ -142,7 +142,7 @@ const Demo = () => {
                 <img
                   src={deleteIcon}
                   alt="delete"
-                  className="w-4 h-4 object-contain"
+                  className="object-contain w-4 h-4"
                   style={{ color: "gray" }}
                 />
               </div>
@@ -153,38 +153,40 @@ const Demo = () => {
 
       {/* Display RESULT */}
 
-      <div className="my-10 max-w-full flex justify-center items-center ">
+      <div className="flex items-center justify-center max-w-full my-10 ">
         {isFetching ? (
-          <img src={loader} alt="loader" className="w-20 h-20 object-contain" />
+          <img src={loader} alt="loader" className="object-contain w-20 h-20" />
         ) : error ? (
-          <p className="font-inter font-bold text-black text-center">
+          <p className="font-bold text-center text-black font-inter">
             {" "}
             Well, that wasn't supposed to happen... <br />
-            <span className="font-satoshi font-normal text-gray-700">
+            <span className="font-normal text-gray-700 font-satoshi">
               {error.message}
             </span>
           </p>
         ) : (
           article.summary && (
             <div className="flex flex-col gap-3">
-              <div className="flex justify-between w-full items-center">
-                <h2 className="font-satoshi font-bold text-gray-600 text-xl">
+              <div className="flex items-center justify-between w-full">
+                <h2 className="text-xl font-bold text-gray-600 font-satoshi">
                   Article <span className="blue_gradient">Summary</span>
                 </h2>
-                <div
-                  onClick={() => handleCopySummary(article?.summary)}
-                  className="cursor-pointer"
-                >
-                  <img
-                    src={copyArticleSummary === article.summary ? tick : copy}
-                    alt="copy_icon"
-                    className="w-5 h-5 object-contain "
-                  />
-                </div>
+                {isLoggedIn && (
+                  <div
+                    onClick={() => handleCopySummary(article?.summary)}
+                    className="cursor-pointer"
+                  >
+                    <img
+                      src={copyArticleSummary === article.summary ? tick : copy}
+                      alt="copy_icon"
+                      className="object-contain w-5 h-5 "
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="summary_box">
-                <p className="font-inter font-medium text-sm text-gray-700">
+                <p className="text-sm font-medium text-gray-700 font-inter">
                   {article.summary}
                 </p>
               </div>

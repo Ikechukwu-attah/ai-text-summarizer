@@ -20,7 +20,7 @@ export const publicRoutes = [
   },
 
   {
-    path: "/reset-password",
+    path: "/reset-password/:token",
     component: ResetPassword,
   },
 
