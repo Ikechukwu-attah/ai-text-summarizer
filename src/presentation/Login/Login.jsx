@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useLoginUserMutation } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { setUser } from "../../slices/userSlice";
 
 const Login = () => {
   const [userLogin, { data: user, error, isLoading, isSuccess }] =
@@ -9,9 +11,13 @@ const Login = () => {
 
   const [data, setData] = useState();
   console.log({ data });
+  const dispatch = useDispatch();
+
+  console.log("User result", user);
 
   useEffect(() => {
     if (isSuccess) {
+      dispatch(setUser(user));
       navigate("/");
       console.log("user", user?.result?.email);
     }

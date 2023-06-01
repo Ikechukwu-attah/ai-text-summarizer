@@ -1,13 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { ailogo } from "../assets";
 import { Link } from "react-router-dom";
 import { checkLoginStatus } from "../Authorization/UserAuthentication";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { useGetAllUserQuery, useSingleUserQuery } from "../services/users";
 
 const Hero = () => {
   const isLoggedIn = checkLoginStatus();
+  console.log({ isLoggedIn });
+  const user = useSelector((state) => state.user);
 
+  const { data: users, error, isLoading, isSuccess } = useGetAllUserQuery();
+  const { data: singleUser } = useSingleUserQuery(isLoggedIn?.id);
+
+  console.log("single user", singleUser);
+
+  // useEffect(() => {
+  //   console.log("redux user", users);
+  // }, [users]);
+
+  console.log("All users", users);
   const navigate = useNavigate();
 
   const logOut = () => {
@@ -32,8 +46,11 @@ const Hero = () => {
               </button>
             </Link>
           ) : (
-            <div className="text-lg cursor-pointer" onClick={logOut}>
-              <h2>logout</h2>
+            <div>
+              <h2>{isLoggedIn?.email}</h2>
+              <div className="text-lg cursor-pointer" onClick={logOut}>
+                <h2>logout</h2>
+              </div>
             </div>
           )}
 
