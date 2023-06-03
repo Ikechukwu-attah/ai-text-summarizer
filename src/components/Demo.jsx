@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { copy, linkIcon, loader, tick, deleteIcon } from "../assets";
-import { useLazyGetSummaryQuery } from "../services/articles";
+// import { useLazyGetSummaryQuery } from "../services/articles";
+import {
+  useGetAllSummarizedArticleQuery,
+  useLazyGetSingleSummarizedArticleQuery,
+  useSummarizedMutation,
+  useLazyDeleteSummarizedArticleQuery,
+} from "../services/articles";
 
 import { v4 as uuidv4 } from "uuid";
 import { checkLoginStatus } from "../Authorization/UserAuthentication";
@@ -13,39 +19,63 @@ const Demo = () => {
   });
 
   const [allArticles, setAllArticles] = useState([]);
-  const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
-  const uniqueId = uuidv4();
+  const {
+    data: allSummarizedArticleData,
+    error: allSummarizedArticleError,
+    isLoading: allSummarizedArticleIsLoading,
+  } = useGetAllSummarizedArticleQuery();
+
+  const [
+    singleArticle,
+    {
+      data: singleArticleData,
+      error: singleArticleError,
+      isLoading: singleArticleIsLoading,
+    },
+  ] = useLazyGetSingleSummarizedArticleQuery();
+
+  const [
+    deleteArticle,
+    { data: deleteData, error: deleteError, isLoading: deleteIsLoading },
+  ] = useLazyDeleteSummarizedArticleQuery();
+
+  const [summarized, { data, error, isLoading, isSuccess }] =
+    useSummarizedMutation();
+
+  // const uniqueId = uuidv4();
+
   const [copied, setCopied] = useState("");
+
   const [copyArticleSummary, setCopyArticleSummary] = useState("");
 
-  useEffect(() => {
-    const articleFromLocalStorage = JSON.parse(
-      localStorage.getItem("articles")
-    );
+  // useEffect(() => {
+  //   const articleFromLocalStorage = JSON.parse(
+  //     localStorage.getItem("articles")
+  //   );
 
-    if (articleFromLocalStorage) {
-      setAllArticles(articleFromLocalStorage);
-    }
-  }, []);
+  //   if (articleFromLocalStorage) {
+  //     setAllArticles(articleFromLocalStorage);
+  //   }
+  // }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       console.log("fetching data");
-      const data = await getSummary({ articleUrl: article.url });
+      const data = await summarized({ url: article.url });
 
       if (data?.data?.summary) {
         const newArticle = {
           ...article,
           summary: data?.data?.summary,
-          id: uniqueId,
+          // id: uniqueId,
         };
 
         const updateArticles = [newArticle, ...allArticles];
         setArticle(newArticle);
         setAllArticles(updateArticles);
-        localStorage.setItem("articles", JSON.stringify(updateArticles));
+        // localStorage.setItem("articles", JSON.stringify(updateArticles));
       } else {
         console.log("no summary in data");
       }
@@ -117,7 +147,7 @@ const Demo = () => {
 
         {/* Browse URL HISTORY */}
         <div className="flex flex-col gap-1 overflow-y-auto max-h-60">
-          {allArticles.map((item, index) => (
+          {allSummarizedArticleData?.map((item, index) => (
             <div
               key={`link-${index}`}
               onClick={() => setArticle(item)}
@@ -136,7 +166,7 @@ const Demo = () => {
               <div
                 onClick={(e) => {
                   e.stopPropagation();
-                  deleteUrl(item?.id);
+                  deleteArticle(item?._id);
                 }}
               >
                 <img
@@ -154,7 +184,7 @@ const Demo = () => {
       {/* Display RESULT */}
 
       <div className="flex items-center justify-center max-w-full my-10 ">
-        {isFetching ? (
+        {isLoading ? (
           <img src={loader} alt="loader" className="object-contain w-20 h-20" />
         ) : error ? (
           <p className="font-bold text-center text-black font-inter">
