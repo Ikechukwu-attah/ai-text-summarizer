@@ -5,7 +5,7 @@ import {
   useGetAllSummarizedArticleQuery,
   useLazyGetSingleSummarizedArticleQuery,
   useSummarizedMutation,
-  useLazyDeleteSummarizedArticleQuery,
+  useDeleteSummarizedArticleMutation,
 } from "../services/articles";
 
 import { v4 as uuidv4 } from "uuid";
@@ -37,7 +37,7 @@ const Demo = () => {
   const [
     deleteArticle,
     { data: deleteData, error: deleteError, isLoading: deleteIsLoading },
-  ] = useLazyDeleteSummarizedArticleQuery();
+  ] = useDeleteSummarizedArticleMutation();
 
   const [summarized, { data, error, isLoading, isSuccess }] =
     useSummarizedMutation();
@@ -47,16 +47,6 @@ const Demo = () => {
   const [copied, setCopied] = useState("");
 
   const [copyArticleSummary, setCopyArticleSummary] = useState("");
-
-  // useEffect(() => {
-  //   const articleFromLocalStorage = JSON.parse(
-  //     localStorage.getItem("articles")
-  //   );
-
-  //   if (articleFromLocalStorage) {
-  //     setAllArticles(articleFromLocalStorage);
-  //   }
-  // }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,20 +88,12 @@ const Demo = () => {
     setTimeout(() => setCopyArticleSummary(false), 3000);
   };
 
-  const deleteUrl = (id) => {
-    const key = "articles";
-    const storedValue = localStorage.getItem(key);
-
-    if (storedValue) {
-      const parsedValue = JSON.parse(storedValue);
-      const updateValue = parsedValue.filter((item) => item.id != id);
-
-      localStorage.setItem(key, JSON.stringify(updateValue));
-      setAllArticles(updateValue);
-      setArticle(updateValue);
+  const handleDelete = async (id) => {
+    try {
+      await deleteArticle(id).unwrap();
+    } catch (err) {
+      console.log({ error });
     }
-
-    console.log("uuid", id);
   };
 
   return (
@@ -153,7 +135,13 @@ const Demo = () => {
               onClick={() => setArticle(item)}
               className="link_card"
             >
-              <div className="copy_btn" onClick={() => handleCopy(item.url)}>
+              <div
+                className="copy_btn"
+                onClick={(e) => {
+                  handleCopy(item.url);
+                  e.stopPropagation();
+                }}
+              >
                 <img
                   src={copied === item.url ? tick : copy}
                   alt="copy_icon"
@@ -166,7 +154,7 @@ const Demo = () => {
               <div
                 onClick={(e) => {
                   e.stopPropagation();
-                  deleteArticle(item?._id);
+                  handleDelete(item?._id);
                 }}
               >
                 <img

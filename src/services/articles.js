@@ -6,22 +6,7 @@ export const articleApi = createApi({
   reducerPath: "articleApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/",
-    // prepareHeaders: (headers) => {
-    //   headers.set("X-RapidAPI-Key", rapidApiKey);
-    //   headers.set(
-    //     "X-RapidAPI-Host",
-    //     "article-extractor-and-summarizer.p.rapidapi.com"
-    //   );
-
-    //   return headers;
-    // },
   }),
-  // endpoints: (builder) => ({
-  //   getSummary: builder.query({
-  //     query: (params) =>
-  //       `/summarize?url=${encodeURIComponent(params.articleUrl)}&length=3`,
-  //   }),
-  // }),
 
   endpoints: (builder) => ({
     summarized: builder.mutation({
@@ -30,10 +15,14 @@ export const articleApi = createApi({
         method: "POST",
         body: link,
       }),
+      providesTags: (result, error) =>
+        result ? [{ type: "Article", id: result._id }] : [],
     }),
 
     getAllSummarizedArticle: builder.query({
       query: () => "summarize/articles",
+      providesTags: (result, error) =>
+        result ? [...result.map(({ id }) => ({ type: "Article", id }))] : [],
     }),
 
     getSingleSummarizedArticle: builder.query({
@@ -45,6 +34,7 @@ export const articleApi = createApi({
         url: `summarize/delete/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: [{ type: "Article" }],
     }),
   }),
 });
