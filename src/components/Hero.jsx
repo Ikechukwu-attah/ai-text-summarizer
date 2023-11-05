@@ -68,13 +68,14 @@ const Hero = () => {
         </div>
       </nav>
       <h1 className="head_text">
-        Summarize Article with <br className="max-md:hidden" />
-        <span className="orange_gradient">OpenAI GPT-4</span>
+        Article Summarization Leveraging <br className="max-md:hidden" />
+        <span className="orange_gradient">Advanced AI Technologies</span>
       </h1>
       <h2 className="desc">
-        Simplify your reading with Summize, an Open-source article summarizer
-        that transforms lengthy articles into clear and concise summaries
+        Improve your reading with 'ReadEase', an open-source tool that
+        simplifies long articles into short, easy-to-understand summaries.
       </h2>
+      <div className="bg-sage">hello world of people</div>
     </header>
   );
 };
